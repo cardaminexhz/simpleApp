@@ -1,0 +1,26 @@
+<h2>编辑</h2>
+<hr>
+<form name="msgForm" ng-submit="save()">
+    <a>{{message.Id}}</a>
+
+    <div class="control-group">
+        <label class="control-label" for="name">姓名:</label>
+        <div class="controls">
+            <input ng-model="message.Name" id="name" required>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="">城市:</label>
+        <div class="controls">
+            <input ng-model="message.City" id="city" required>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="country">国籍:</label>
+        <div class="controls">
+            <input ng-model="message.Country" id="country" required>
+        </div>
+    </div>
+</form>

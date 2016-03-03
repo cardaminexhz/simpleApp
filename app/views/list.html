@@ -1,0 +1,20 @@
+<input ng-model="searchText" placeholder="search for ...">{{searchText}}
+<hr>
+<table>
+    <tr>
+        <td><strong>序号</strong></td>
+        <td><strong>姓名</strong></td>
+        <td><strong>城市</strong></td>
+        <td><strong>国籍</strong></td>
+        <td><strong>操作</strong></td>
+    </tr>
+    <!-- 过滤器filter，限制搜索结果 -->
+    <tr ng-repeat="message in messages | filter:searchText | orderBy:'Country'">
+        <td>{{$index + 1}}</td>
+        <td>{{message.Name}}</td>
+        <td>{{message.City}}</td>
+        <td>{{message.Country | uppercase}}</td>
+        <td><button ng-click="edit()">修改</button></td>
+        <td><button ng-click="remove($index)">删除</button></td>
+    </tr>
+</table>
