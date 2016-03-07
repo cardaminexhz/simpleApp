@@ -17,6 +17,9 @@ app.config(['$routeProvider', function($routeProvider) {
         }).
         when('/edit/:Id', {
             controller: 'EditController',
+            /*resolve: {
+                message: [""]
+            },*/
             templateUrl: 'views/edit.html'
         });
 }]);
@@ -40,16 +43,20 @@ var messages = [{
 app.controller('ListController', ['$scope', '$location', 'GetMessages', 'SingleMessage',
     function($scope, $location, GetMessages, SingleMessage) {
         $scope.messages = GetMessages.query();
+        //$scope.message = SingleMessage.show();
 
         $scope.remove = function(index) {
             $scope.messages.splice(index,1);
             // TODO: 传给server
         };
 
-        $scope.edit = function() {
-            $scope.message = SingleMessage;
-            console.log("id:"+ SingleMessage.Id);
-            $location.path('/edit/' + SingleMessage.Id);
+        $scope.edit = function(index) {
+            console.log("index:" + index);
+            $location.path('/edit/' + index);
+        }
+
+        $scope.add = function() {
+            $location.path('/edit/');
         }
 
         // step2. 与server交互应由服务完成；暂时放在此处
@@ -67,9 +74,21 @@ app.controller('ListController', ['$scope', '$location', 'GetMessages', 'SingleM
             */
     }]);
 
-app.controller('EditController', ['$scope',
-    function($scope){
+app.controller('EditController', ['$scope', '$routeParams', 'GetMessages', '$location',
+    function($scope, $routeParams, GetMessages, $location){
+        $scope.messages = GetMessages.query();
+        $scope.message = $scope.messages[$routeParams.Id];
 
+        $scope.save = function() {
+            console.log("already save");
+            $location.path("/");
+        }
+
+        $scope.del = function() {
+            delete $scope.message;
+            console.log("already delete");
+            $location.path('/');
+        }
 }]);
 
 

@@ -24,6 +24,7 @@ services.factory('GetMessages', ['$http',
              */
             // step3.
             return [
+                {Id:'0',Name:'000',City:'http://cn.bing.com',Country:'必应'},
                 {Id:'1',Name:'001',City:'http://sina.com.cn',Country:'新浪'},
                 {Id:'2',Name:'002',City:'www.baidu.com',Country:'百度'}
             ];
@@ -33,5 +34,9 @@ services.factory('GetMessages', ['$http',
 
 services.factory('SingleMessage', ['$http',
     function($http) {
-        return {Id:'1',Name:'001',City:'http://sina.com.cn',Country:'新浪'};
+        var message = {};
+        message.show = function(){
+            return {Id:'1',Name:'001',City:'http://sina.com.cn',Country:'新浪'};
+        }
+        return message;
 }]);
