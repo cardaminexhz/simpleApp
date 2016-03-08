@@ -7,6 +7,36 @@
     <script src="scripts/controllers/controllers.js"></script>
     <script src="scripts/services/services.js"></script>
     <link href="styles/bootstrap.css" rel="stylesheet">
+
+
+    <!-- [跨域]step3. JSONP client端的核心：实现动态查询
+            怎么样让远程JS知道它应该调用的本地函数叫什么名字？
+            client传参告诉server"我想要一段调用xx函数的JS代码，请返回给我"；即client在发送请求URL时，指定回调函数-->
+    <script type="text/javascript">
+        // 得到航班信息查询结果后的回调函数
+        var flightHandler = function(data){
+            alert('你查询的航班结果是：票价 ' + data.price + ' 元，' + '余票 ' + data.tickets + ' 张。');
+        };
+        // 提供jsonp服务的url地址（不管是什么类型的地址，最终生成的返回值都是一段javascript代码）
+        var url = "http://localhost:8090/remote.js?code=CA1998&callback=flightHandler";
+        // 创建script标签，设置其属性
+        var script = document.createElement('script');
+        script.setAttribute('src', url);
+        // 把script标签加入head，此时调用开始
+        document.getElementsByTagName('head')[0].appendChild(script);
+    </script>
+
+    <!-- [跨域]step2. 本地函数被跨域的远程js调用，并接收远程js带来的数据 -->
+    <script type="text/javascript">
+        var localHandler = function(data){
+            alert('我是本地函数，可以被跨域的remote.js文件调用，远程js带来的数据是：' + data.result);
+        };
+    </script>
+
+    <!-- [跨域]step1. 通过拥有src属性的标签进行跨域调用 <script><img><iframe> -->
+    <script type="text/javascript" src="http://localhost:8090/remote.js"></script>
+
+
     <title>simpleApp</title>
 </head>
 <body>

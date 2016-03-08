@@ -10,11 +10,17 @@
     </tr>
     <!-- 过滤器filter，限制搜索结果 -->
     <tr ng-repeat="message in messages | filter:searchText | orderBy:'Country'">
-        <td>{{$index}}</td>
+        <!--<td>{{$index}}</td>
         <td>{{message.Name}}</td>
         <td>{{message.City}}</td>
-        <td>{{message.Country | uppercase}}</td>
+        <td>{{message.Country | uppercase}}</td>-->
+        <td>{{$index}}</td>
+        <td ng-bind="message.Name"></td>
+        <td ng-bind="message.City"></td>
+        <td ng-bind="message.Country"></td>
+        <!-- ng-click 传参 -->
         <td><button ng-click="edit($index)">修改</button></td>
+        <!--<td><button ng-click="edit(message.Id)">修改</button></td>-->
         <td><button ng-click="remove($index)">删除</button></td>
     </tr>
 </table>

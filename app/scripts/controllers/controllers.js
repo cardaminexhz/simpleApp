@@ -7,13 +7,18 @@ var app = angular.module('simpleApp', ['simpleApp.services']);
 app.config(['$routeProvider', function($routeProvider) {
     $routeProvider.
         when('/', {
-            controller: 'ListController',
-            /*resolve: {
-                messages: ["GetMessages", function(GetMessages) {
-                    return GetMessages();
+            //controller: 'ListController',
+            /*
+            resolve: {
+                messages: ["MessagesLoader", function(MessagesLoader) {
+                    return MessagesLoader.getMessages();
                 }]
-            },*/
-            templateUrl: 'views/list.html'
+            },
+            */
+            //templateUrl: 'views/list.html'
+            // step5. 与server交互
+            controller: 'StatisController',
+            templateUrl: 'views/statis.html'
         }).
         when('/edit/:Id', {
             controller: 'EditController',
@@ -24,6 +29,22 @@ app.config(['$routeProvider', function($routeProvider) {
         });
 }]);
 
+app.controller('StatisController', ['$scope', '$location', 'RequestServer',
+    function($scope, $location, RequestServer) {
+        //$scope.results = RequestServer.query();
+
+        /*
+        $scope.remove = function(index) {
+            $scope.messages.splice(index,1);
+            // TODO: 传给server
+        };
+
+        $scope.edit = function(id) {
+            console.log("id:" + id);
+            $location.path('/edit/' + id);
+        }
+        */
+    }]);
 /*
 // step1.
 var messages = [{
@@ -40,19 +61,20 @@ var messages = [{
 */
 
 // 将messages发布到模板list.html
-app.controller('ListController', ['$scope', '$location', 'GetMessages', 'SingleMessage',
-    function($scope, $location, GetMessages, SingleMessage) {
+app.controller('ListController', ['$scope', '$location', 'GetMessages',
+    function($scope, $location, GetMessages) {
+        //$scope.messages = MessagesLoader.getMessages();
         $scope.messages = GetMessages.query();
-        //$scope.message = SingleMessage.show();
+        //$scope.searchText = "hello world";
 
         $scope.remove = function(index) {
             $scope.messages.splice(index,1);
             // TODO: 传给server
         };
 
-        $scope.edit = function(index) {
-            console.log("index:" + index);
-            $location.path('/edit/' + index);
+        $scope.edit = function(id) {
+            console.log("id:" + id);
+            $location.path('/edit/' + id);
         }
 
         $scope.add = function() {
@@ -74,10 +96,15 @@ app.controller('ListController', ['$scope', '$location', 'GetMessages', 'SingleM
             */
     }]);
 
-app.controller('EditController', ['$scope', '$routeParams', 'GetMessages', '$location',
-    function($scope, $routeParams, GetMessages, $location){
+app.controller('EditController', ['$scope', '$routeParams', 'GetMessages', '$location', 'SingleMessage',
+    function($scope, $routeParams, GetMessages, $location, SingleMessage){
+
         $scope.messages = GetMessages.query();
         $scope.message = $scope.messages[$routeParams.Id];
+
+        /*
+        $scope.message = SingleMessage.show();
+        */
 
         $scope.save = function() {
             console.log("already save");
