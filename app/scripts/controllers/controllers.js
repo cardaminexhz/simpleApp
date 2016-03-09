@@ -31,7 +31,7 @@ app.config(['$routeProvider', function($routeProvider) {
 
 app.controller('StatisController', ['$scope', '$location', 'RequestServer',
     function($scope, $location, RequestServer) {
-        //$scope.results = RequestServer.query();
+        $scope.results = RequestServer.query();
 
         /*
         $scope.remove = function(index) {

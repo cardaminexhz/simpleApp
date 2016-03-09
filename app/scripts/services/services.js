@@ -6,17 +6,7 @@ services.factory('RequestServer', ['$http',
     function($http){
         var results = {};
         results.query = function() {
-
-            var myUrl ="http://localhost:8081/statistic?callback=JSON_CALLBACK";
-            $http.jsonp(myUrl).success(
-                function(data, status){
-                    console.log("status:"+status);
-                    console.log(data);
-                }
-            );
-
-            /*
-            $http.get("http://localhost:8081/statistic")
+            $http.get("http://localhost:8081/api?type=2&sign=2b1c6e8429bb059bc9edda0e7fe9c40c")
                 .success(function (data, status) {
                     console.log("http get success");
                     results = data;
@@ -25,10 +15,8 @@ services.factory('RequestServer', ['$http',
                 })
                 .error(function (data, status) {
                     results = data || "Request failed";
-                    console.log("results:"+results);
-                    console.log("status"+status);
+                    console.log(status);
                 });
-            */
             return results;
         }
         return results;
