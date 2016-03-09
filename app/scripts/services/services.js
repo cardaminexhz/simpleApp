@@ -1,12 +1,65 @@
 'use strict';
 
 var services = angular.module('simpleApp.services', ['ngResource']);
-
+/*
 services.factory('RequestServer', ['$http',
+    function($http){
+        /!*return function() {
+            var results = {};
+            var myUrl = "http://localhost:8090/remote.js?callback=JSON_CALLBACK";
+            $http.jsonp(myUrl).success(
+                function(data) {
+                    console.log("http get success");
+                    results = JSON.stringify(data);
+                    //results = data;
+                    console.log(data);
+                    console.log("解析后:" + JSON.stringify(data));
+                });
+            return results;
+        };*!/
+        var results = {};
+        results.query = function() {
+            var myUrl = "http://localhost:8090/remote.js?callback=JSON_CALLBACK";
+            $http.jsonp(myUrl).success(
+                function(data){
+                    console.log("http get success");
+                    results = JSON.stringify(data);
+                    //results = data;
+                    console.log(data);
+                    console.log("解析后:" + JSON.stringify(data));
+                    alert("解析后:" + JSON.stringify(data));
+                }
+            );
+            return results;
+        }
+        return results;
+    }]);
+*/
+
+services.factory('RequestServer', ['$http', '$q',
+    function($http, $q) {
+        return function() {
+            var results = {};
+            var myUrl = "http://localhost:8090/remote.js?callback=JSON_CALLBACK";
+            var delay = $q.defer();
+            $http.jsonp(myUrl).success(function(data) {
+                console.log("http get success");
+                //results = JSON.stringify(data);
+                results = data;
+                alert("解析后:" + results);
+                delay.resolve(results);
+            }, function() {
+                delay.reject('Unable to fetch recipes');
+            });
+            return delay.promise;
+        };
+    }]);
+
+/*services.factory('RequestServer', ['$http',
     function($http){
         var results = {};
         results.query = function() {
-            $http.get("http://localhost:8081/api?type=2&sign=2b1c6e8429bb059bc9edda0e7fe9c40c")
+            $http.get("http://localhost:8081/statistic")
                 .success(function (data, status) {
                     console.log("http get success");
                     results = data;
@@ -20,29 +73,22 @@ services.factory('RequestServer', ['$http',
             return results;
         }
         return results;
-    }]);
+    }]);*/
 
 services.factory('MessagesLoader', ['$q', '$http',
     function($q, $http){
-        return {
-            getMessages: function() {
-                var delay = $q.defer();
-                $http.get("http://localhost:8088/simpleApp/Customers_JSON.php")
-                    .success(function (data, status) {
-                        alert("success");
-                        delay.resolve(function() {
-                            console.log(status +": http get success");
-                            console.log(data);
-                            return data;
-                        });
-                    })
-                    .error(function (status) {
-                        delay.reject(function() {
-                            console.log(status + ": Unable to fetch messages");
-                        });
-                    });
-                return delay.promise;
-            }
+        return function() {
+            var delay = $q.defer();
+            $http.get("http://localhost:8088/simpleApp/Customers_JSON.php")
+                .success(function (data, status) {
+                    console.log(status +": http get success");
+                    console.log(data);
+                    delay.resolve(data);
+                })
+                .error(function () {
+                    delay.reject("Unable to fetch messages");
+                });
+            return delay.promise;
         };
 }]);
 

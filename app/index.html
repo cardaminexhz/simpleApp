@@ -8,14 +8,26 @@
     <script src="scripts/services/services.js"></script>
     <link href="styles/bootstrap.css" rel="stylesheet">
 
-
     <!-- [跨域]step3. JSONP client端的核心：实现动态查询
             怎么样让远程JS知道它应该调用的本地函数叫什么名字？
             client传参告诉server"我想要一段调用xx函数的JS代码，请返回给我"；即client在发送请求URL时，指定回调函数-->
     <script type="text/javascript">
         // 得到航班信息查询结果后的回调函数
         var flightHandler = function(data){
-            alert('你查询的航班结果是：票价 ' + data.price + ' 元，' + '余票 ' + data.tickets + ' 张。');
+            <!-- [跨域]step4. 处理server返回的数据：几种格式 -->
+            /* JSONArray
+            * flightHandler([
+            * {"code": "CA1998", "price": 1780, "tickets": 5 },
+            * {"code": "CA2001", "price": 2090, "tickets": 10 }
+            * ]);*/
+            for(var i=0; i<data.length; i++){
+                    alert('你查询的航班结果是：票价 ' + data[i].price + ' 元，' + '余票 ' + data[i].tickets + ' 张。');
+            }
+
+            /* JSON
+            flightHandler({ "code": "CA1998", "price": 1780, "tickets": 5 });
+            */
+//            alert('你查询的航班结果是：票价 ' + data.price + ' 元，' + '余票 ' + data.tickets + ' 张。');
         };
         // 提供jsonp服务的url地址（不管是什么类型的地址，最终生成的返回值都是一段javascript代码）
         var url = "http://localhost:8090/remote.js?code=CA1998&callback=flightHandler";

@@ -7,17 +7,21 @@ var app = angular.module('simpleApp', ['simpleApp.services']);
 app.config(['$routeProvider', function($routeProvider) {
     $routeProvider.
         when('/', {
-            //controller: 'ListController',
-            /*
+/*            controller: 'ListController',
             resolve: {
                 messages: ["MessagesLoader", function(MessagesLoader) {
-                    return MessagesLoader.getMessages();
+                    return MessagesLoader();
                 }]
             },
-            */
-            //templateUrl: 'views/list.html'
+            templateUrl: 'views/list.html'*/
+
             // step5. 与server交互
             controller: 'StatisController',
+            resolve: {
+                results: ["RequestServer", function(RequestServer) {
+                    return RequestServer();
+                }]
+            },
             templateUrl: 'views/statis.html'
         }).
         when('/edit/:Id', {
@@ -29,13 +33,20 @@ app.config(['$routeProvider', function($routeProvider) {
         });
 }]);
 
-app.controller('StatisController', ['$scope', '$location', 'RequestServer',
-    function($scope, $location, RequestServer) {
-        $scope.results = RequestServer.query();
+app.controller('StatisController', ['$scope', '$location', 'RequestServer', 'results',
+    function($scope, $location, RequestServer, results) {
+        //$scope.results = RequestServer.query();
+        alert("赋值之前");
+        $scope.results = results;
+        //alert("in controller:" + results);
+        for(var i=0; i<results.length; i++){
+            console.log(results[i].category + " : " + results[i].num);
+        }
+        console.log("in controller:" );
+        console.log($scope.results);
 
-        /*
         $scope.remove = function(index) {
-            $scope.messages.splice(index,1);
+            $scope.results.splice(index,1);
             // TODO: 传给server
         };
 
@@ -43,7 +54,6 @@ app.controller('StatisController', ['$scope', '$location', 'RequestServer',
             console.log("id:" + id);
             $location.path('/edit/' + id);
         }
-        */
     }]);
 /*
 // step1.
@@ -61,10 +71,12 @@ var messages = [{
 */
 
 // 将messages发布到模板list.html
-app.controller('ListController', ['$scope', '$location', 'GetMessages',
-    function($scope, $location, GetMessages) {
+app.controller('ListController', ['$scope', '$location', 'GetMessages', 'messages',
+    function($scope, $location, GetMessages, messages) {
         //$scope.messages = MessagesLoader.getMessages();
-        $scope.messages = GetMessages.query();
+        //$scope.messages = GetMessages.query();
+        $scope.messages = messages;
+        console.log($scope.messages);
         //$scope.searchText = "hello world";
 
         $scope.remove = function(index) {
