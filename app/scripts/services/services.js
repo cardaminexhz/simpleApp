@@ -1,42 +1,10 @@
 'use strict';
 
 var services = angular.module('simpleApp.services', ['ngResource']);
-/*
-services.factory('RequestServer', ['$http',
-    function($http){
-        /!*return function() {
-            var results = {};
-            var myUrl = "http://localhost:8090/remote.js?callback=JSON_CALLBACK";
-            $http.jsonp(myUrl).success(
-                function(data) {
-                    console.log("http get success");
-                    results = JSON.stringify(data);
-                    //results = data;
-                    console.log(data);
-                    console.log("解析后:" + JSON.stringify(data));
-                });
-            return results;
-        };*!/
-        var results = {};
-        results.query = function() {
-            var myUrl = "http://localhost:8090/remote.js?callback=JSON_CALLBACK";
-            $http.jsonp(myUrl).success(
-                function(data){
-                    console.log("http get success");
-                    results = JSON.stringify(data);
-                    //results = data;
-                    console.log(data);
-                    console.log("解析后:" + JSON.stringify(data));
-                    alert("解析后:" + JSON.stringify(data));
-                }
-            );
-            return results;
-        }
-        return results;
-    }]);
-*/
 
-services.factory('RequestServer', ['$http', '$q',
+// 用JSONP实现跨域，访问8090端口的远程文件remote.js
+/*
+services.factory('MultiResultsLoader', ['$http', '$q',
     function($http, $q) {
         return function() {
             var results = {};
@@ -44,7 +12,6 @@ services.factory('RequestServer', ['$http', '$q',
             var delay = $q.defer();
             $http.jsonp(myUrl).success(function(data) {
                 console.log("http get success");
-                //results = JSON.stringify(data);
                 results = data;
                 alert("解析后:" + results);
                 delay.resolve(results);
@@ -54,26 +21,101 @@ services.factory('RequestServer', ['$http', '$q',
             return delay.promise;
         };
     }]);
+*/
 
-/*services.factory('RequestServer', ['$http',
-    function($http){
-        var results = {};
-        results.query = function() {
-            $http.get("http://localhost:8081/statistic")
+// 用CORS实现跨域，获取记录列表
+services.factory('MultiResultsLoader', ['$http', '$q',
+    function($http, $q){
+        return function() {
+            var results = {};
+            //var myUrl = "http://localhost:8090/remote.js?callback=JSON_CALLBACK";
+            var myUrl = "http://localhost:8081/statistic";
+            var delay = $q.defer();
+
+            $http.get(myUrl)
                 .success(function (data, status) {
                     console.log("http get success");
                     results = data;
                     console.log(status);
                     console.log(results);
+                    delay.resolve(results);
                 })
                 .error(function (data, status) {
-                    results = data || "Request failed";
                     console.log(status);
+                    delay.reject('Unable to fetch recipes');
                 });
-            return results;
+            return delay.promise;
         }
-        return results;
-    }]);*/
+    }
+]);
+
+// 获取单条记录
+services.factory('ResultLoader', ['$http', '$q', '$route', '$routeParams',
+    function($http, $q, $route, $routeParams) {
+        return function() {
+            console.log("in service:" + $route.current.params.category);
+            //console.log("in server:" + $routeParams.category);
+
+            var result = {};
+            var myUrl = "http://localhost:8081/statistic";
+            var delay = $q.defer();
+
+            $http({
+                method: 'GET',
+                url: myUrl,
+                params: {category: $route.current.params.category}
+            })
+            .success(function (data, status) {
+                console.log("http get success");
+                result = data;
+                console.log(status);
+                console.log(result);
+                delay.resolve(result);
+            })
+            .error(function (data, status) {
+                console.log(status);
+                delay.reject('Unable to fetch recipes');
+            });
+            return delay.promise;
+        }
+    }
+]);
+
+// TODO: 提交单条记录
+services.factory('RecordCreation', ['$http', '$q',
+    function($http, $q) {
+        return function (category, num) {
+            // TODO: 获取category, num
+            console.log("in service [RecordCreation]:" + category + "; " + num);
+
+            // TODO: post 到server
+            var myUrl = "http://localhost:8081/statistic/add";
+            var delay = $q.defer();
+
+            $http({
+                method: 'POST',
+                url: myUrl,
+                params: {
+                    category: category,
+                    num: num
+                }
+            })
+            .success(function (data, status) {
+                console.log("http get success");
+                console.log(status);
+                delay.resolve('save to server success');
+            })
+            .error(function (data, status) {
+                console.log(status);
+                delay.reject('Unable to fetch recipes');
+            });
+            return delay.promise;
+
+            // TODO: 接收server的返回消息，是否添加成功，返回界面给出提示
+
+        }
+    }
+]);
 
 services.factory('MessagesLoader', ['$q', '$http',
     function($q, $http){

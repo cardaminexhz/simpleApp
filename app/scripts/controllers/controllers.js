@@ -18,43 +18,76 @@ app.config(['$routeProvider', function($routeProvider) {
             // step5. 与server交互
             controller: 'StatisController',
             resolve: {
-                results: ["RequestServer", function(RequestServer) {
-                    return RequestServer();
+                results: ["MultiResultsLoader", function(MultiResultsLoader) {
+                    return MultiResultsLoader();
                 }]
             },
             templateUrl: 'views/statis.html'
         }).
-        when('/edit/:Id', {
+/*        when('/edit/:Id', {
             controller: 'EditController',
-            /*resolve: {
+            /!*resolve: {
                 message: [""]
-            },*/
+            },*!/
             templateUrl: 'views/edit.html'
+        })*/
+        when('/edit/:category', {
+            controller: 'EditStatisController',
+            resolve: {
+                result: ["ResultLoader", function(ResultLoader) {
+                    return ResultLoader();
+                }]
+            },
+            templateUrl: 'views/editStatis.html'
         });
 }]);
 
-app.controller('StatisController', ['$scope', '$location', 'RequestServer', 'results',
-    function($scope, $location, RequestServer, results) {
-        //$scope.results = RequestServer.query();
-        alert("赋值之前");
+app.controller('StatisController', ['$scope', '$location', 'results',
+    function($scope, $location, results) {
         $scope.results = results;
         //alert("in controller:" + results);
-        for(var i=0; i<results.length; i++){
+/*        for(var i=0; i<results.length; i++){
             console.log(results[i].category + " : " + results[i].num);
-        }
+        }*/
         console.log("in controller:" );
         console.log($scope.results);
+
+        $scope.add = function() {
+            $location.path('/edit/');
+        }
 
         $scope.remove = function(index) {
             $scope.results.splice(index,1);
             // TODO: 传给server
         };
 
-        $scope.edit = function(id) {
-            console.log("id:" + id);
-            $location.path('/edit/' + id);
+        $scope.edit = function(category) {
+            console.log("category:" + category);
+            $location.path('/edit/' + category);
         }
     }]);
+
+app.controller('EditStatisController', ['$scope', '$location', 'result', 'RecordCreation',
+    function($scope, $location, result, RecordCreation) {
+        $scope.result = result;
+        console.log(result);
+
+        $scope.save = function() {
+            console.log("enter save: " + $scope.result.category + "; " + $scope.result.num);
+            // TODO: 表单提交的数据如何传给service; 还是考虑错了方向
+            RecordCreation($scope.result.category, $scope.result.num);
+
+            console.log("already save");
+            //$location.path("/");
+        }
+
+        $scope.del = function() {
+            delete $scope.message;
+            console.log("already delete");
+            $location.path('/');
+        }
+    }]);
+
 /*
 // step1.
 var messages = [{
